@@ -1,0 +1,168 @@
+{
+  "rabbit_version": "3.12.0",
+  "users": [
+    {
+      "name": "football",
+      "password_hash": "football123",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": ["administrator"]
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "football",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "football.events",
+      "vhost": "/",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "football.dlx",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "queues": [
+    {
+      "name": "standings.queue",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "football.dlx",
+        "x-dead-letter-routing-key": "dlq"
+      }
+    },
+    {
+      "name": "stats.queue",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "football.dlx",
+        "x-dead-letter-routing-key": "dlq"
+      }
+    },
+    {
+      "name": "notifications.queue",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "football.dlx",
+        "x-dead-letter-routing-key": "dlq"
+      }
+    },
+    {
+      "name": "audit.queue",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "football.dlx",
+        "x-dead-letter-routing-key": "dlq"
+      }
+    },
+    {
+      "name": "football.dlq",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    {
+      "source": "football.events",
+      "vhost": "/",
+      "destination": "standings.queue",
+      "destination_type": "queue",
+      "routing_key": "match.goal",
+      "arguments": {}
+    },
+    {
+      "source": "football.events",
+      "vhost": "/",
+      "destination": "standings.queue",
+      "destination_type": "queue",
+      "routing_key": "match.status",
+      "arguments": {}
+    },
+    {
+      "source": "football.events",
+      "vhost": "/",
+      "destination": "stats.queue",
+      "destination_type": "queue",
+      "routing_key": "match.#",
+      "arguments": {}
+    },
+    {
+      "source": "football.events",
+      "vhost": "/",
+      "destination": "notifications.queue",
+      "destination_type": "queue",
+      "routing_key": "match.goal",
+      "arguments": {}
+    },
+    {
+      "source": "football.events",
+      "vhost": "/",
+      "destination": "notifications.queue",
+      "destination_type": "queue",
+      "routing_key": "match.card",
+      "arguments": {}
+    },
+    {
+      "source": "football.events",
+      "vhost": "/",
+      "destination": "notifications.queue",
+      "destination_type": "queue",
+      "routing_key": "match.status",
+      "arguments": {}
+    },
+    {
+      "source": "football.events",
+      "vhost": "/",
+      "destination": "notifications.queue",
+      "destination_type": "queue",
+      "routing_key": "match.substitution",
+      "arguments": {}
+    },
+    {
+      "source": "football.events",
+      "vhost": "/",
+      "destination": "audit.queue",
+      "destination_type": "queue",
+      "routing_key": "match.#",
+      "arguments": {}
+    },
+    {
+      "source": "football.dlx",
+      "vhost": "/",
+      "destination": "football.dlq",
+      "destination_type": "queue",
+      "routing_key": "dlq",
+      "arguments": {}
+    }
+  ]
+}
